@@ -28,5 +28,6 @@
   },
   "dependencies": {
     "@rapid-cli/utils": "^0.0.1"
-  }
+  },
+  "gitHead": "25c378e55d6faed4c3efecd0486a70ae50bb48b8"
 }
