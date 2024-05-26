@@ -1,6 +1,6 @@
 {
   "name": "@rapid-cli/core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "> TODO: description",
   "author": "余亚勇 <15189120919@163.com>",
   "homepage": "https://github.com/Ankera/rapid-cli/tree/master/packages/core#readme",
@@ -27,7 +27,7 @@
     "url": "https://github.com/Ankera/rapid-cli/issues"
   },
   "dependencies": {
-    "@rapid-cli/utils": "^0.0.1"
+    "@rapid-cli/utils": "^0.0.2"
   },
   "gitHead": "25c378e55d6faed4c3efecd0486a70ae50bb48b8"
 }
