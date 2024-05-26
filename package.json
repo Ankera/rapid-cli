@@ -1,0 +1,26 @@
+{
+  "name": "rapid-cli",
+  "version": "1.0.0",
+  "description": "低代码脚手架工程化",
+  "main": "index.js",
+  "bin": {
+    "rp": "bin/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ankera/rapid-cli.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ankera/rapid-cli/issues"
+  },
+  "homepage": "https://github.com/Ankera/rapid-cli#readme",
+  "dependencies": {
+    "lerna": "^3.22.1"
+  }
+}
