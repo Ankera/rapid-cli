@@ -1,11 +1,8 @@
 {
   "name": "rapid-cli",
-  "version": "1.0.0",
+  "version": "0.0.3",
   "description": "低代码脚手架工程化",
   "main": "index.js",
-  "bin": {
-    "rp": "bin/index.js"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,6 +21,6 @@
   },
   "homepage": "https://github.com/Ankera/rapid-cli#readme",
   "dependencies": {
-    "lerna": "^3.22.1"
+    "lerna": "^4.0.0"
   }
 }

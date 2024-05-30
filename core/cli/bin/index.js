@@ -1,4 +1,5 @@
-'use strict';
+#!/usr/bin/env node
+
 const utils = require('@rapid-cli/utils')
 
 module.exports = core;
@@ -8,5 +9,7 @@ function core() {
 
     utils();
 }
+
+require('../lib')
 
 core();
