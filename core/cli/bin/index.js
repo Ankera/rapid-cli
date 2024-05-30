@@ -1,15 +1,10 @@
 #!/usr/bin/env node
 
-const utils = require('@rapid-cli/utils')
+const importLocal = require('import-local');
 
-module.exports = core;
-
-function core() {
-    // TODO
-
-    utils();
+if (importLocal(__filename)) {
+    console.log('====================importLocal', __filename)
+    require('npmlog').info('CLI', '正在使用 rapid-cli 本地版本');
+} else {
+    require('../lib')(process.argv.slice(2));
 }
-
-require('../lib')
-
-core();

@@ -1,2 +1,6 @@
 
-console.log('===============111')
+const fun = (args) => {
+  console.log(args);
+}
+
+module.exports = fun;

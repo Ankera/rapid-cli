@@ -3,7 +3,7 @@
   "version": "0.0.4",
   "description": "> TODO: description",
   "author": "余亚勇 <15189120919@163.com>",
-  "homepage": "https://github.com/Ankera/rapid-cli/tree/master/packages/core#readme",
+  "homepage": "https://github.com/Ankera/rapid-cli/blob/master/core/cli/README.md",
   "license": "ISC",
   "main": "lib/index.js",
   "bin": {
@@ -31,7 +31,9 @@
     "url": "https://github.com/Ankera/rapid-cli/issues"
   },
   "dependencies": {
-    "@rapid-cli/utils": "file:../../utils/utils"
+    "@rapid-cli/utils": "file:../../utils/utils",
+    "import-local": "^3.1.0",
+    "npmlog": "^7.0.1"
   },
   "gitHead": "05034ff3c2e518c22ce8b66a84e2e394b508f3e1"
 }
