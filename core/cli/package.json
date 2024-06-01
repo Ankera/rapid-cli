@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@rapid-cli/utils": "file:../../utils/utils",
+    "@rapid-cli/log": "file:../../utils/log",
     "import-local": "^3.1.0",
     "npmlog": "^7.0.1"
   },

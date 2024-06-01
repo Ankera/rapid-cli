@@ -23,7 +23,8 @@ npx lerna run test
 执行单独包的命令
 npx lerna run --scope @rapid-cli/utils test
 
-
+lerna create @rapid-cli/log utils/
+lerna add npmlog utils/log 
 ```
 
 #### 核心模块

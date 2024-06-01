@@ -1,6 +1,15 @@
+const pkg = require('../package.json');
+const utils = require('@rapid-cli/utils');
+const log = require('@rapid-cli/log');
 
-const fun = (args) => {
-  console.log(args);
+function core() {
+  checkPkgVeresion();
 }
 
-module.exports = fun;
+function checkPkgVeresion() {
+  console.log(pkg.version)
+
+  log.success('test', 'success....')
+}
+
+module.exports = core;

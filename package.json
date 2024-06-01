@@ -1,6 +1,6 @@
 {
   "name": "rapid-cli",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "低代码脚手架工程化",
   "main": "index.js",
   "scripts": {
