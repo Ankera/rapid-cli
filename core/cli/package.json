@@ -36,6 +36,7 @@
     "colors": "^1.4.0",
     "import-local": "^3.1.0",
     "npmlog": "^7.0.1",
+    "minimist": "^1.2.5",
     "path-exists": "^4.0.0",
     "root-check": "^1.0.0",
     "semver": "^7.6.2",

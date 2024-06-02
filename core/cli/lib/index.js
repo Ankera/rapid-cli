@@ -7,6 +7,8 @@ const semver = require('semver');
 const colors = require('colors');
 const constant = require('./const');
 
+let args = null;
+
 function core() {
   try {
     checkPkgVersion();
@@ -16,6 +18,10 @@ function core() {
     checkRoot();
 
     checkUserHome();
+
+    checkInputArgs();
+
+    log.verbose('debug', 'test debug log');
   } catch (error) {
     log.error(error.message)
   }
@@ -51,6 +57,22 @@ function checkUserHome() {
   if (!userHome || !pathExists(userHome)) {
     throw new Error(colors.red('用户主目录不存在'));
   }
+}
+
+function checkInputArgs() {
+  const minimist = require('minimist')
+  args = minimist(process.argv.slice(2))
+  checkArgs();
+}
+
+function checkArgs() {
+  if (args.debug) {
+    process.env.LOG_LEVEL = 'verbose';
+  } else {
+    process.env.LOG_LEVEL = 'info';
+  }
+
+  log.level = process.env.LOG_LEVEL;
 }
 
 module.exports = core;

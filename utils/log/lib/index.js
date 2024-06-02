@@ -4,7 +4,7 @@
 
 const log = require('npmlog')
 
-log.verbose = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info';
+log.level = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info';
 
 log.heading = 'Rapid-CLI';
 log.headingStyle = { fg: 'red', bg: 'black', bold: true }
