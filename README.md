@@ -25,6 +25,12 @@ npx lerna run --scope @rapid-cli/utils test
 
 lerna create @rapid-cli/log utils/
 lerna add npmlog utils/log 
+
+core/cli 下安装 semver
+lerna add semver core/cli 
+
+core/cli 下安装 colors
+lerna add colors core/cli 
 ```
 
 #### 核心模块

@@ -11,4 +11,6 @@ log.headingStyle = { fg: 'red', bg: 'black', bold: true }
 
 log.addLevel('success', 2000, { fg: 'green', bold: true })
 
+log.addLevel('version', 2000, { fg: 'green', bold: true })
+
 module.exports = log;
