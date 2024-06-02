@@ -1,14 +1,18 @@
 const path = require("path");
 // const utils = require("@rapid-cli/utils");
 const log = require("@rapid-cli/log");
+const init = require('@rapid-cli/init');
 const userHome = require("user-home");
 const pathExists = require("path-exists").sync;
 const semver = require("semver");
 const colors = require("colors");
+const commander = require('commander')
 const pkg = require("../package.json");
-const constant = require("./const");
+const C = require("./const");
 
 let args = null;
+
+const program = new commander.Command();
 
 async function core() {
   try {
@@ -20,11 +24,13 @@ async function core() {
 
     checkUserHome();
 
-    checkInputArgs();
+    // checkInputArgs();
 
     checkEnv();
 
     await checkGloalUpdate();
+
+    registerCommand();
     // log.verbose("debug", "test debug log");
   } catch (error) {
     log.error(error.message);
@@ -38,7 +44,7 @@ function checkPkgVersion() {
 function checkNodeVersion() {
   const currentVersion = process.version;
 
-  const lowestNodeVersion = constant.LOWEST_NODE_VERSION;
+  const lowestNodeVersion = C.LOWEST_NODE_VERSION;
 
   if (!semver.gte(currentVersion, lowestNodeVersion)) {
     throw new Error(
@@ -103,7 +109,7 @@ function createDefaultConfig() {
   if (process.env.CLI_HOME) {
     cliConifg.cliHome = path.join(userHome, process.env.CLI_HOME);
   } else {
-    cliConifg.cliHome = path.join(userHome, constant.DEFAULT_CLI_HOME);
+    cliConifg.cliHome = path.join(userHome, C.DEFAULT_CLI_HOME);
   }
 
   process.env.CLI_HOME_PATH = cliConifg.cliHome;
@@ -133,6 +139,52 @@ async function checkGloalUpdate() {
         `请手动更新 ${npmName}，当前版本${currentVersion}，最新版本${lastVersion}，更新命令：npm install -g ${npmName}`
       )
     );
+  }
+}
+
+/**
+ * 注册命令
+ */
+function registerCommand () {
+  program
+    .name(Object.keys(pkg.bin)[0])
+    .usage('<command> [options]')
+    .version(pkg.version)
+    .option('-d, --debug', '是否开启debug模式', false)
+  
+  program
+    .command('init [projectName]')
+    .option('-f, --force', '是否强制初始化', false)
+    .action(init)
+
+  program.on('option:debug', () => {
+    const params = program.opts();
+    if (params.debug) {
+      process.env.LOG_LEVEL = "verbose";
+    } else {
+      process.env.LOG_LEVEL = 'info';
+    }
+    log.level = process.env.LOG_LEVEL;
+  })
+
+  /**
+   * 对未知命令的监听
+   */
+  program.on('command:*', (obj) => {
+    const availableCommands = program.commands.map(cmd => cmd.name())
+
+    console.log(colors.red(`未知的命令: ` + obj[0]));
+    
+    if (availableCommands.length > 0) {
+      console.log(colors.red(`可用的命令结合: ` + availableCommands.join('|')))
+    }
+  })
+
+  program.parse(process.argv);
+
+  if (program.args && program.args.length < 1) {
+    program.outputHelp();
+    console.log();
   }
 }
 

@@ -31,10 +31,12 @@
     "url": "https://github.com/Ankera/rapid-cli/issues"
   },
   "dependencies": {
+    "@rapid-cli/get-npm-info": "file:../../utils/get-npm-info",
     "@rapid-cli/log": "file:../../utils/log",
     "@rapid-cli/utils": "file:../../utils/utils",
-    "@rapid-cli/get-npm-info": "file:../../utils/get-npm-info",
+    "@rapid-cli/init": "file:../../commands/init",
     "colors": "^1.4.0",
+    "commander": "^12.1.0",
     "dotenv": "^16.4.5",
     "import-local": "^3.1.0",
     "minimist": "^1.2.5",
