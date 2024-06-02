@@ -1,5 +1,5 @@
 const path = require("path");
-const utils = require("@rapid-cli/utils");
+// const utils = require("@rapid-cli/utils");
 const log = require("@rapid-cli/log");
 const userHome = require("user-home");
 const pathExists = require("path-exists").sync;
@@ -9,9 +9,8 @@ const pkg = require("../package.json");
 const constant = require("./const");
 
 let args = null;
-let config = null;
 
-function core() {
+async function core() {
   try {
     checkPkgVersion();
 
@@ -24,6 +23,8 @@ function core() {
     checkInputArgs();
 
     checkEnv();
+
+    await checkGloalUpdate();
     // log.verbose("debug", "test debug log");
   } catch (error) {
     log.error(error.message);
@@ -83,6 +84,7 @@ function checkArgs() {
 function checkEnv() {
   const dotenv = require("dotenv");
   const dotenvPath = path.resolve(userHome, ".env");
+  let config = null;
   if (pathExists(dotenvPath)) {
     config = dotenv.config({
       path: path.resolve(userHome, ".env"),
@@ -101,11 +103,37 @@ function createDefaultConfig() {
   if (process.env.CLI_HOME) {
     cliConifg.cliHome = path.join(userHome, process.env.CLI_HOME);
   } else {
-    cliConifg.cliHome = path.join(userHome, constant.DEFAULT_CLI_HOME)
+    cliConifg.cliHome = path.join(userHome, constant.DEFAULT_CLI_HOME);
   }
 
   process.env.CLI_HOME_PATH = cliConifg.cliHome;
   return cliConifg;
+}
+
+/**
+ * 检查是否要进行全局更新
+ */
+async function checkGloalUpdate() {
+  const { getNpmSemverVersions } = require('@rapid-cli/get-npm-info');
+
+  // 1. 获取当前版本号和模块名
+  const currentVersion = pkg.version;
+  const npmName = pkg.name;
+
+  // 2. 调用 npm API 获取所有版本号
+  // const lastVersion = await getNpmSemverVersions('1.0.4', '@imooc-cli/core');
+  const lastVersion = await getNpmSemverVersions(currentVersion, npmName);
+
+  // 3. 提取所有版本号，比对哪些版本号大于当前版本号
+  // 4. 获取最新版本号，提示用户更新到改版本
+  if (lastVersion && semver.gt(lastVersion, currentVersion)) {
+    log.warn(
+      "更新提示",
+      colors.yellow(
+        `请手动更新 ${npmName}，当前版本${currentVersion}，最新版本${lastVersion}，更新命令：npm install -g ${npmName}`
+      )
+    );
+  }
 }
 
 module.exports = core;
