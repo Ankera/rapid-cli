@@ -36,7 +36,10 @@
     "colors": "^1.4.0",
     "import-local": "^3.1.0",
     "npmlog": "^7.0.1",
-    "semver": "^7.6.2"
+    "path-exists": "^4.0.0",
+    "root-check": "^1.0.0",
+    "semver": "^7.6.2",
+    "user-home": "^2.0.0"
   },
   "gitHead": "05034ff3c2e518c22ce8b66a84e2e394b508f3e1"
 }
