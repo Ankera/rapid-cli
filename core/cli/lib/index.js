@@ -75,24 +75,30 @@ function checkEnv() {
   const dotenvPath = path.resolve(userHome, ".env");
   let config = null;
   if (pathExists(dotenvPath)) {
-    config = dotenv.config({
+    dotenv.config({
       path: path.resolve(userHome, ".env"),
     });
-  } else {
-    config = createDefaultConfig();
   }
+  config = createDefaultConfig();
 }
 
 function createDefaultConfig() {
   const cliConifg = {
     home: userHome,
   };
+  /**
+   * CLI_HOME 来自地方
+   * 如果配置了  .env 文件
+   * /Users/yuyayong 会存在一个 .env 文件
+   *  CLI_HOME=.rapid-cli
+   *  DB_USER=root
+   *  DB_PASSWORD=123456
+   */
   if (process.env.CLI_HOME) {
     cliConifg.cliHome = path.join(userHome, process.env.CLI_HOME);
   } else {
     cliConifg.cliHome = path.join(userHome, C.DEFAULT_CLI_HOME);
   }
-
   process.env.CLI_HOME_PATH = cliConifg.cliHome;
   return cliConifg;
 }

@@ -1,8 +1,9 @@
-'use strict';
+"use strict";
 
-module.exports = utils;
-
-function utils() {
-    // TODO
-    console.log('=======2====utils 8888')
+function isObject(o) {
+  return Object.prototype.toString.call(o) === "[object Object]";
 }
+
+module.exports = {
+    isObject
+};

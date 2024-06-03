@@ -25,5 +25,9 @@
   },
   "bugs": {
     "url": "https://github.com/Ankera/rapid-cli/issues"
+  },
+  "dependencies": {
+    "@rapid-cli/utils": "file:../../utils/utils",
+    "pkg-dir": "4.2.0"
   }
 }

@@ -27,6 +27,7 @@
     "url": "https://github.com/Ankera/rapid-cli/issues"
   },
   "dependencies": {
+    "@rapid-cli/log": "file:../../utils/log",
     "@rapid-cli/package": "file:../../models/package"
   }
 }
