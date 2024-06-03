@@ -1,40 +1,39 @@
 const path = require("path");
 // const utils = require("@rapid-cli/utils");
 const log = require("@rapid-cli/log");
-const init = require('@rapid-cli/init');
+const exec = require("@rapid-cli/exec");
 const userHome = require("user-home");
 const pathExists = require("path-exists").sync;
 const semver = require("semver");
 const colors = require("colors");
-const commander = require('commander')
+const commander = require("commander");
 const pkg = require("../package.json");
 const C = require("./const");
-
-let args = null;
 
 const program = new commander.Command();
 
 async function core() {
   try {
-    checkPkgVersion();
-
-    checkNodeVersion();
-
-    checkRoot();
-
-    checkUserHome();
-
-    // checkInputArgs();
-
-    checkEnv();
-
-    await checkGloalUpdate();
+    await prepare();
 
     registerCommand();
-    // log.verbose("debug", "test debug log");
   } catch (error) {
     log.error(error.message);
   }
+}
+
+async function prepare() {
+  checkPkgVersion();
+
+  checkNodeVersion();
+
+  checkRoot();
+
+  checkUserHome();
+
+  checkEnv();
+
+  await checkGloalUpdate();
 }
 
 function checkPkgVersion() {
@@ -71,22 +70,6 @@ function checkUserHome() {
   }
 }
 
-function checkInputArgs() {
-  const minimist = require("minimist");
-  args = minimist(process.argv.slice(2));
-  checkArgs();
-}
-
-function checkArgs() {
-  if (args.debug) {
-    process.env.LOG_LEVEL = "verbose";
-  } else {
-    process.env.LOG_LEVEL = "info";
-  }
-
-  log.level = process.env.LOG_LEVEL;
-}
-
 function checkEnv() {
   const dotenv = require("dotenv");
   const dotenvPath = path.resolve(userHome, ".env");
@@ -98,8 +81,6 @@ function checkEnv() {
   } else {
     config = createDefaultConfig();
   }
-
-  log.verbose("环境变量", config);
 }
 
 function createDefaultConfig() {
@@ -120,7 +101,7 @@ function createDefaultConfig() {
  * 检查是否要进行全局更新
  */
 async function checkGloalUpdate() {
-  const { getNpmSemverVersions } = require('@rapid-cli/get-npm-info');
+  const { getNpmSemverVersions } = require("@rapid-cli/get-npm-info");
 
   // 1. 获取当前版本号和模块名
   const currentVersion = pkg.version;
@@ -145,40 +126,51 @@ async function checkGloalUpdate() {
 /**
  * 注册命令
  */
-function registerCommand () {
+function registerCommand() {
   program
     .name(Object.keys(pkg.bin)[0])
-    .usage('<command> [options]')
+    .usage("<command> [options]")
     .version(pkg.version)
-    .option('-d, --debug', '是否开启debug模式', false)
-  
-  program
-    .command('init [projectName]')
-    .option('-f, --force', '是否强制初始化', false)
-    .action(init)
+    .option("-d, --debug", "是否开启debug模式", false)
+    .option("-n, --number <numbers...>", "specify numbers")
+    .option("-tp, --targetPath <targetPath>", "是否指定本地调试文件路径", "");
 
-  program.on('option:debug', () => {
+  program
+    .command("init [projectName]")
+    .option("-f, --force", "是否强制初始化", false)
+    .action(exec);
+
+  program.on("option:debug", () => {
     const params = program.opts();
     if (params.debug) {
       process.env.LOG_LEVEL = "verbose";
     } else {
-      process.env.LOG_LEVEL = 'info';
+      process.env.LOG_LEVEL = "info";
     }
     log.level = process.env.LOG_LEVEL;
-  })
+  });
+
+  /**
+   * 指定全局的 targetPath 监听
+   * 执行业务逻辑之前执行
+   */
+  program.on("option:targetPath", () => {
+    const params = program.opts();
+    process.env.CLI_TARGET_PATH = params.targetPath;
+  });
 
   /**
    * 对未知命令的监听
    */
-  program.on('command:*', (obj) => {
-    const availableCommands = program.commands.map(cmd => cmd.name())
+  program.on("command:*", (obj) => {
+    const availableCommands = program.commands.map((cmd) => cmd.name());
 
     console.log(colors.red(`未知的命令: ` + obj[0]));
-    
+
     if (availableCommands.length > 0) {
-      console.log(colors.red(`可用的命令结合: ` + availableCommands.join('|')))
+      console.log(colors.red(`可用的命令结合: ` + availableCommands.join("|")));
     }
-  })
+  });
 
   program.parse(process.argv);
 

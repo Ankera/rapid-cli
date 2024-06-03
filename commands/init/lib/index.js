@@ -2,9 +2,9 @@
 
 
 
-function init(projectName, cmdObj) {
+function init(projectName, cmdObj, command) {
     // TODO
-    console.log('===', projectName, cmdObj)
+    console.log('===', projectName, cmdObj, command.parent.opts())
 }
 
 module.exports = init;
