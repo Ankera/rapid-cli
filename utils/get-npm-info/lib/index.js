@@ -23,7 +23,7 @@ function getNpmInfo (npmName, registry) {
 }
 
 function getDefaultRegistry (isRegistry = false) {
-  return isRegistry ? 'https://registry.npm.taobao.org/' : 'https://registry.npmjs.org/'
+  return isRegistry ? 'https://registry.npmmirror.com' : 'https://registry.npmjs.org/'
 }
 
 /**
@@ -48,7 +48,7 @@ async function getNpmVersions (npmName, registry) {
 function getSemverVersions (baseVersion, versions) {
   versions = versions
     .filter((version) => semver.satisfies(version, `>${baseVersion}`))
-    .sort((a, b) => semver.gt(b, a));
+    .sort((a, b) => semver.compare(b, a));
   return versions;
 }
 
@@ -64,9 +64,7 @@ async function getNpmSemverVersions (baseVersion, npmName, registry) {
 async function getNpmLatestVersion (npmName, registry) {
   let versions = await getNpmVersions(npmName, registry);
   if (versions) {
-    // @ts-ignore
-    versions = versions.sort((a, b) => semver.gt(b, a));
-    return versions[0];
+    return versions.sort((a, b) => semver.compare(b, a))[0]
   }
   return null;
 }

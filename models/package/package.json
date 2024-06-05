@@ -27,7 +27,12 @@
     "url": "https://github.com/Ankera/rapid-cli/issues"
   },
   "dependencies": {
+    "@rapid-cli/format-path": "file:../../utils/format-path",
+    "@rapid-cli/get-npm-info": "file:../../utils/get-npm-info",
     "@rapid-cli/utils": "file:../../utils/utils",
-    "pkg-dir": "4.2.0"
+    "fs-extra": "^10.0.0",
+    "npminstall": "^7.12.0",
+    "pkg-dir": "4.2.0",
+    "path-exists": "^4.0.0"
   }
 }

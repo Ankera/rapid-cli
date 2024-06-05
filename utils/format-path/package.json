@@ -1,9 +1,9 @@
 {
-  "name": "@rapid-cli/exec",
+  "name": "@rapid-cli/format-path",
   "version": "0.0.5",
   "description": "> TODO: description",
   "author": "余亚勇 <15189120919@163.com>",
-  "homepage": "https://github.com/Ankera/rapid-cli/tree/main/core/exec#readme",
+  "homepage": "https://github.com/Ankera/rapid-cli/tree/main/utils/format-path#readme",
   "license": "ISC",
   "main": "lib/index.js",
   "directories": {
@@ -25,10 +25,5 @@
   },
   "bugs": {
     "url": "https://github.com/Ankera/rapid-cli/issues"
-  },
-  "dependencies": {
-    "@rapid-cli/log": "file:../../utils/log",
-    "@rapid-cli/package": "file:../../models/package",
-    "user-home": "^3.0.0"
   }
 }
