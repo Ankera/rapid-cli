@@ -1,0 +1,34 @@
+{
+  "name": "@rapid-cli/command",
+  "version": "0.0.5",
+  "description": "> TODO: description",
+  "author": "ankera <15189120919@163.com>",
+  "homepage": "https://github.com/Ankera/rapid-cli/tree/main/models/command#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ankera/rapid-cli.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/Ankera/rapid-cli/issues"
+  },
+  "dependencies": {
+    "@rapid-cli/log": "file:../../utils/log",
+    "colors": "^1.4.0",
+    "semver": "^7.6.2"
+  }
+}
