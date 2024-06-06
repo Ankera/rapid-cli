@@ -3,6 +3,7 @@
 const path = require("path");
 const Package = require("@rapid-cli/package");
 const log = require("@rapid-cli/log");
+const UTILS = require('@rapid-cli/utils');
 
 const SETTINGS = {
   // init: "@rapid-cli/init",
@@ -55,8 +56,39 @@ async function exec() {
 
   const rootFile = pkg.getRootFilePath();
   if (rootFile) {
-    log.verbose('rootFile', rootFile);
-    require(rootFile).call(null, Array.from(arguments))
+    try {
+      const args = Array.from(arguments);
+      const cmd = args[args.length - 1];
+      const o = Object.create(null);
+      Object.keys(cmd).forEach(key => {
+        if (cmd.hasOwnProperty(key) &&
+          !key.startsWith('_') &&
+          key !== 'parent') {
+          o[key] = cmd[key];
+        }
+      })
+
+      args[args.length - 1] = o;
+      const code = `require('${rootFile}').call(null, ${JSON.stringify(args)})`;
+
+      const child = UTILS.exec('node', ['-e', code], {
+        cwd: process.cwd(),
+        stdio: 'inherit'
+      });
+
+      child.on('error', error => {
+        log.error('child', error.message);
+        process.exit(1)
+      });
+
+      child.on('exit', e => {
+        log.verbose('命令执行成功', e.toString());
+        process.exit(e);
+      });
+
+    } catch (error) {
+      log.error('rootFile', error.message);
+    }
   }
 }
 

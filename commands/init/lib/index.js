@@ -1,5 +1,6 @@
 "use strict";
 
+const log = require('@rapid-cli/log')
 /**
  * 动态加载init模块
  * 脚手架与业务扩展
@@ -20,6 +21,10 @@ class InitCommand extends Command {
 
     log.verbose("command projectName ==>", this.projectName);
     log.verbose("command force ==>", this.force.toString());
+  }
+
+  exec() {
+
   }
 }
 
