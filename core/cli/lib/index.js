@@ -28,7 +28,7 @@ async function core() {
 async function prepare() {
   checkPkgVersion();
 
-  checkNodeVersion();
+  // checkNodeVersion();
 
   checkRoot();
 
