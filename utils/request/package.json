@@ -1,9 +1,9 @@
 {
-  "name": "@rapid-cli/utils",
+  "name": "@rapid-cli/request",
   "version": "0.0.5",
   "description": "> TODO: description",
   "author": "余亚勇 <15189120919@163.com>",
-  "homepage": "https://github.com/Ankera/rapid-cli/tree/master/packages/utils#readme",
+  "homepage": "https://github.com/Ankera/rapid-cli/tree/main/utils/request#readme",
   "license": "ISC",
   "main": "lib/index.js",
   "directories": {
@@ -14,7 +14,6 @@
     "lib"
   ],
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
   "repository": {
@@ -22,13 +21,12 @@
     "url": "git+https://github.com/Ankera/rapid-cli.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" 2222"
+    "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
     "url": "https://github.com/Ankera/rapid-cli/issues"
   },
-  "gitHead": "05034ff3c2e518c22ce8b66a84e2e394b508f3e1",
   "dependencies": {
-    "cli-spinner": "^0.2.10"
+    "axios": "^0.26.0"
   }
 }

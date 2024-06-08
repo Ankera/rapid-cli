@@ -27,7 +27,17 @@
     "url": "https://github.com/Ankera/rapid-cli/issues"
   },
   "dependencies": {
+    "@rapid-cli/command": "file:../../models/command",
     "@rapid-cli/log": "file:../../utils/log",
-    "@rapid-cli/command": "file:../../models/command"
+    "@rapid-cli/request": "file:../../utils/request",
+    "@rapid-cli/package": "file:../../models/package",
+    "@rapid-cli/utils": "file:../../utils/utils",
+    "ejs": "^3.1.6",
+    "fs-extra": "^10.0.1",
+    "glob": "^7.2.0",
+    "inquirer": "^8.2.0",
+    "kebab-case": "^1.0.1",
+    "semver": "^7.3.5",
+    "user-home": "^2.0.0"
   }
 }

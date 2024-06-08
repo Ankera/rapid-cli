@@ -60,6 +60,7 @@ async function exec() {
       const args = Array.from(arguments);
       const cmd = args[args.length - 1];
       const o = Object.create(null);
+
       Object.keys(cmd).forEach(key => {
         if (cmd.hasOwnProperty(key) &&
           !key.startsWith('_') &&
@@ -82,7 +83,9 @@ async function exec() {
       });
 
       child.on('exit', e => {
-        log.verbose('命令执行成功', e.toString());
+        if (e) {
+          log.verbose('命令执行成功', e.toString());
+        }
         process.exit(e);
       });
 

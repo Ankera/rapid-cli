@@ -42,4 +42,16 @@ lerna add colors core/cli
 ```
 1-2-4
 1-4-7
+1-5-7
+1-6-7
+1-6-8
+```
+
+#### npm init egg
+```
+npm init egg
+
+create-egg
+
+require('egg')
 ```
