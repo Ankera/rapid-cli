@@ -20,6 +20,9 @@ const apiConfig = [
     installCommand: "npm install",
     startCommand: "npm run start",
     tag: ["project"],
+    ignore: [
+      "**/public/**"
+    ]
   },
   {
     name: "Rapid Vue3 Admin 通用后台模块", // 这个是正常的npm已发布
@@ -29,6 +32,9 @@ const apiConfig = [
     installCommand: "npm install",
     startCommand: "npm run start",
     tag: ["project"],
+    ignore: [
+      "**/public/**"
+    ]
   },
   {
     name: "react中台管理系统", // 这个是正常的npm已发布
