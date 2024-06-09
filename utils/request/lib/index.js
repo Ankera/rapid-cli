@@ -61,6 +61,30 @@ const apiConfig = [
     ]
   },
   {
+    name: "rapid Vu3 组件库", // 这个是正常的npm已发布
+    npmName: "rapid-base-vue3-component",
+    version: "1.0.0",
+    type: "normal",
+    installCommand: "npm install",
+    startCommand: "npm run serve",
+    tag: ["component"],
+    ignore: [
+      "**/public/**", "**.png"
+    ]
+  },
+  {
+    name: "rapid 自定义模块", // 这个是正常的npm已发布
+    npmName: "rapid-test-custom",
+    version: "1.0.2",
+    type: "custom",
+    installCommand: "npm install",
+    startCommand: "npm run serve",
+    tag: ["project"],
+    ignore: [
+      "**/public/**", "**.png"
+    ]
+  },
+  {
     name: "自定义模板",
     npmName: "arg-react-cli-template-444",
     version: "1.0.0",
@@ -68,6 +92,9 @@ const apiConfig = [
     installCommand: "npm install",
     startCommand: "npm run start",
     tag: ["project"],
+    ignore: [
+      "**/public/**", "**.png"
+    ]
   },
 ]
 

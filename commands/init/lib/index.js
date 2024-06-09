@@ -21,6 +21,7 @@ const getTemplate = require("@rapid-cli/request");
  */
 
 const Command = require("@rapid-cli/command");
+const { stdin } = require("process");
 
 /**
  * 项目&组件
@@ -76,7 +77,7 @@ class InitCommand extends Command {
     } catch (error) {
       log.error("ERR", error.message);
       if (process.env.LOG_LEVEL === "verbose") {
-        console.log(e);
+        console.log(error);
       }
     }
   }
@@ -193,6 +194,11 @@ class InitCommand extends Command {
       ],
     });
     log.verbose("TYPE", type);
+
+    this.template = this.template.filter((template) => {
+      return template.tag.includes(type);
+    });
+
     /**
      * 过滤选择项目&组件
      */
@@ -200,18 +206,44 @@ class InitCommand extends Command {
       (template) => Array.isArray(template.tag) && template.tag.includes(type)
     );
 
-    if (type === TYPE_PROJECT) {
-      // 2. 获取项目的基本信息
-      const projectNamePrompt = {
+    const title = type === TYPE_PROJECT ? '项目' : '组件';
+    // 2. 获取项目的基本信息
+    const projectNamePrompt = {
+      type: "input",
+      name: "projectName",
+      message: `请输入${title}名称`,
+      default: "",
+      validate: function (v) {
+        const done = this.async();
+        setTimeout(() => {
+          if (!isValidName(v)) {
+            done(`请输入合法的${title}名称`);
+            return;
+          } else {
+            done(null, true);
+          }
+        }, 0);
+      },
+      filter: (v) => {
+        return v;
+      },
+    };
+
+    const projectPrompt = [];
+    if (!isValidProjectName) {
+      projectPrompt.push(projectNamePrompt);
+    }
+    projectPrompt.push(
+      {
         type: "input",
-        name: "projectName",
-        message: "请输入项目名称",
+        name: "projectVersion",
+        message: `请输入${title}版本号`,
         default: "",
         validate: function (v) {
           const done = this.async();
           setTimeout(() => {
-            if (!isValidName(v)) {
-              done("请输入合法的项目名称");
+            if (!!!semver.valid(v)) {
+              done(`请输入${title}版本号`);
               return;
             } else {
               done(null, true);
@@ -219,61 +251,71 @@ class InitCommand extends Command {
           }, 0);
         },
         filter: (v) => {
-          return v;
+          if (!!semver.valid(v)) {
+            return semver.valid(v);
+          } else {
+            return v;
+          }
         },
-      };
-
-      const projectPrompt = [];
-      if (!isValidProjectName) {
-        projectPrompt.push(projectNamePrompt);
+      },
+      {
+        type: "list",
+        name: "projectTemplate",
+        message: `请选择${title}模板`,
+        choices: this.createTemplateChoies(),
       }
-      projectPrompt.push(
-        {
-          type: "input",
-          name: "projectVersion",
-          message: "请输入项目版本号",
-          default: "",
-          validate: function (v) {
-            const done = this.async();
-            setTimeout(() => {
-              if (!!!semver.valid(v)) {
-                done("请输入合法的版本号");
-                return;
-              } else {
-                done(null, true);
-              }
-            }, 0);
-          },
-          filter: (v) => {
-            if (!!semver.valid(v)) {
-              return semver.valid(v);
-            } else {
-              return v;
-            }
-          },
-        },
-        {
-          type: "list",
-          name: "projectTemplate",
-          message: "请选择项目模板",
-          choices: this.createTemplateChoies(),
-        }
-      );
-      const info = await inquirer.prompt(projectPrompt);
+    );
+
+    if (type === TYPE_PROJECT) {
+      const project = await inquirer.prompt(projectPrompt);
 
       projectInfo = {
         ...projectInfo,
         type,
-        ...info,
+        ...project,
       };
     } else if (type === TYPE_COMPONENT) {
       // 待补充
+      const descriptionPrompt =  {
+        type: "input",
+        name: "componentDescription",
+        message: "请输入组件描述信息",
+        default: "",
+        validate: function (v) {
+          const done = this.async();
+          setTimeout(() => {
+            if (!v) {
+              done("描述信息不能为空~~~");
+              return;
+            } else {
+              done(null, true);
+            }
+          }, 0);
+        }
+      }
+
+      projectPrompt.push(descriptionPrompt);
+      const component = await inquirer.prompt(projectPrompt);
+
+      projectInfo = {
+        ...projectInfo,
+        type,
+        ...component,
+      };
     }
 
     if (projectInfo.projectName) {
       projectInfo.className = require("kebab-case")(
         projectInfo.projectName
       ).replace(/^-/, "");
+    }
+
+    if (projectInfo.projectVersion) {
+      projectInfo.version = projectInfo.projectVersion
+    }
+
+    if (projectInfo.componentDescription) {
+      projectInfo.description = projectInfo.componentDescription;
     }
 
     return projectInfo;
@@ -464,6 +506,7 @@ class InitCommand extends Command {
                   {
                     className: projectInfo.className,
                     version: projectInfo.projectVersion,
+                    description: projectInfo.description,
                   },
                   {},
                   (err, result) => {
@@ -493,7 +536,33 @@ class InitCommand extends Command {
    * 安装自定义模板
    */
   async installCustomTemplate() {
-    console.log("安装自定义模板");
+    if (await this.templateNpm.exists()) {
+      const rootFile = await this.templateNpm.getRootFilePath();
+      if (fs.existsSync(rootFile)) {
+        log.notice('开始执行自定义模块');
+
+        const templatePath = path.resolve(this.templateNpm.cachFilePath, 'template');
+
+        const options = {
+          templateInfo: this.templateInfo,
+          projectInfo: this.projectInfo,
+          sourcePath: templatePath,
+          targetPath: process.cwd()
+        }
+        
+        const code = `require('${rootFile}')(${JSON.stringify(options)})`;
+        
+        log.verbose('自定义代码', code)
+        await execAsync('node', ['-e', code], {
+          stdin: 'inherit',
+          cwd: process.cwd()
+        })
+
+        log.success('自定义模块执行成功')
+      } else {
+        throw new Error('自定义模板文件不存在')
+      }
+    }
   }
 }
 
