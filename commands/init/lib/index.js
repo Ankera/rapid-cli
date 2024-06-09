@@ -9,7 +9,7 @@ const Package = require("@rapid-cli/package");
 const ejs = require("ejs");
 const userHome = require("user-home");
 const log = require("@rapid-cli/log");
-const { spinnerStart, sleep, execAsync } = require('@rapid-cli/utils');
+const { spinnerStart, sleep, execAsync } = require("@rapid-cli/utils");
 const getTemplate = require("@rapid-cli/request");
 /**
  * 动态加载init模块
@@ -33,6 +33,11 @@ const TYPE_COMPONENT = "component";
  */
 const TEMPLATE_TYPE_NORMAL = "normal";
 const TEMPLATE_TYPE_CUSTOM = "custom";
+
+/**
+ * 白名单命令
+ */
+const WHITE_COMMAND = ['npm', 'cnpm'];
 
 class InitCommand extends Command {
   init() {
@@ -74,14 +79,17 @@ class InitCommand extends Command {
   }
 
   async prepare() {
+    const spinner = spinnerStart("Init is loading...");
     /**
      * 判断模板是否存在
      */
     const template = await getTemplate();
     if (!template || template.length == 0) {
+      spinner.stop(true)
       throw new Error("项目模板不存在");
     }
 
+    spinner.stop(true)
     this.template = template;
 
     /**
@@ -277,22 +285,29 @@ class InitCommand extends Command {
 
   async downloadTemplate() {
     const { projectTemplate } = this.projectInfo;
-    const templateInfo = this.template.find((item) => item.npmName === projectTemplate);
-    const targetPath = path.resolve(userHome, '.rapid-cli', 'template');
-    const storeDir = path.resolve(userHome, '.rapid-cli', 'template', 'node_modules');
+    const templateInfo = this.template.find(
+      (item) => item.npmName === projectTemplate
+    );
+    const targetPath = path.resolve(userHome, ".rapid-cli", "template");
+    const storeDir = path.resolve(
+      userHome,
+      ".rapid-cli",
+      "template",
+      "node_modules"
+    );
     const { npmName, version } = templateInfo;
     this.templateInfo = templateInfo;
-    log.verbose('templateInfo', JSON.stringify(this.templateInfo))
+    log.verbose("templateInfo", JSON.stringify(this.templateInfo));
 
     const templateNpm = new Package({
       targetPath,
       storeDir,
       packageName: npmName,
-      packageVersion: version
+      packageVersion: version,
     });
 
     if (!(await templateNpm.exists())) {
-      const spinner = spinnerStart('正在下载模板');
+      const spinner = spinnerStart("正在下载模板");
       await sleep();
       try {
         await templateNpm.install();
@@ -300,11 +315,13 @@ class InitCommand extends Command {
         throw error;
       } finally {
         spinner.stop(true);
-        log.success('下载模板成功');
+        if (await templateNpm.exists() && templateNpm.isCorrect) {
+          log.success('下载模板成功');
+        }
         this.templateNpm = templateNpm;
       }
     } else {
-      const spinner = spinnerStart('正在更新模板');
+      const spinner = spinnerStart("正在更新模板");
       await sleep();
       try {
         await templateNpm.update();
@@ -312,16 +329,110 @@ class InitCommand extends Command {
         throw error;
       } finally {
         spinner.stop(true);
-        log.success('更新模板成功');
+        if (await templateNpm.exists() && templateNpm.isCorrect) {
+          log.success('更新模板成功');
+        }
         this.templateNpm = templateNpm;
       }
     }
 
-    log.verbose('templateNpm', JSON.stringify(this.templateNpm))
+    log.verbose("templateNpm", JSON.stringify(this.templateNpm));
   }
 
+  // 安装模板
   async installTemplate() {
+    if (this.templateInfo) {
+      const { type } = this.templateInfo;
+      if (!type) {
+        this.templateInfo.type = TEMPLATE_TYPE_NORMAL;
+      }
+      // 安装标准模板
+      if (type === TEMPLATE_TYPE_NORMAL) {
+        await this.installNormalTemplate();
 
+        // 安装自定义模板
+      } else if (type === TEMPLATE_TYPE_CUSTOM) {
+        await this.installCustomTemplate();
+      } else {
+        throw new Error("无法识别模板信息");
+      }
+    } else {
+      throw new Error("模板信息不存在");
+    }
+  }
+
+  /**
+   * 检查命令是否合法
+   * @param {*} cmd 
+   * @returns 
+   */
+  checkCommand (cmd) {
+    if (WHITE_COMMAND.includes(cmd)) {
+      return cmd;
+    }
+    return null;
+  }
+
+  async execCommand (command, errMessage) {
+    let result;
+    if (typeof command === 'string') {
+      let cmdArray = command.split(' ');
+      if (cmdArray.length > 0) {
+        const cmd = this.checkCommand(cmdArray[0]);
+        if (!cmd) {
+          throw new Error(`命令不存在!命令：${command}`);
+        }
+
+        const args = cmdArray.slice(1);
+        result = await execAsync(cmd, args, {
+          stdio: 'inherit',
+          cwd: process.cwd()
+        });
+        if (result !== 0) {
+          throw new Error(errMessage);
+        }
+      }
+    }
+    return result;
+  }
+
+   /**
+   * 安装标准模板
+   */
+   async installNormalTemplate () {
+    // 1、
+    const spinner = spinnerStart('正在安装模板');
+    await sleep();
+    try {
+      const templatePath = path.resolve(this.templateNpm.cachFilePath, 'template');
+      const targetPath = process.cwd();
+
+      fse.ensureDirSync(templatePath);
+      fse.ensureDirSync(targetPath);
+      // 拷贝模板到当前目录
+      fse.copySync(templatePath, targetPath);
+    } catch (error) {
+      throw error;
+    } finally {
+      spinner.stop(true);
+      log.success('模板安装成功');
+    }
+
+    // // 替换模板
+    // // const ignore = ['node_modules/**', 'public/**'];
+    // const ignore = ['node_modules/**', ...(this.templateInfo.ignore || [])];
+    // await this.ejsRender({ ignore });
+
+    // // 2、安装依赖
+    const { installCommand, startCommand } = this.templateInfo;
+    await this.execCommand(installCommand, '依赖安装过程失败');
+
+    // // 3、启动项目
+    await this.execCommand(startCommand, '模板启动过程失败')
+  }
+
+  async installCustomTemplate() {
+    console.log('安装自定义模板')
   }
 }
 

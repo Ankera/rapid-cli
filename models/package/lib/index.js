@@ -11,12 +11,16 @@ const {
   getNpmLatestVersion,
 } = require("@rapid-cli/get-npm-info");
 const fse = require("fs-extra");
+const { error } = require("console");
 
 class Package {
   constructor(options) {
     if (!options || !isObject(options)) {
       throw new Error("Package 类的options不能为空！");
     }
+
+    this.isCorrect = true;
+
     // package 的路径
     this.targetPath = options.targetPath;
 
@@ -80,7 +84,7 @@ class Package {
   async install() {
     await this.prepare();
 
-    npminstall({
+    await npminstall({
       root: this.targetPath,
       storeDir: this.storeDir,
       register: getDefaultRegistry(),
@@ -90,7 +94,9 @@ class Package {
           version: this.packageVersion,
         },
       ],
-    });
+    }).catch((err)=> {
+      this.isCorrect = false;
+    })
   }
 
   // 更新 package
@@ -112,7 +118,9 @@ class Package {
             version: latestPackageVersion
           }
         ]
-      });
+      }).catch((err)=> {
+        this.isCorrect = false;
+      })
     }
     // 更新到最新的版本号
     this.packageVersion = latestPackageVersion;
